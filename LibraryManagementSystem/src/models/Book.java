@@ -82,9 +82,17 @@ public class Book implements Serializable {
     }
 
     public static Book fromCSV(String csv) {
-        String[] parts = csv.split(",");
-        Book book = new Book(parts[0], parts[1], parts[2], Integer.parseInt(parts[3]));
+       
+        String[] parts = csv.split(",", 6);
+        
+        String bookId = parts[0];
+        String title = parts[1];
+        String author = parts[2];
+        int year = Integer.parseInt(parts[3]);
+        
+        Book book = new Book(bookId, title, author, year);
         book.setStatus(BookStatus.valueOf(parts[4]));
+        
         if (parts.length > 5 && !parts[5].isEmpty()) {
             book.setCheckedOutBy(parts[5]);
             System.out.println("Loaded checked out book: " + book.getTitle() + " by Patron ID: " + parts[5]);
