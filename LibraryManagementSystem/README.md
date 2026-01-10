@@ -26,6 +26,10 @@ A comprehensive console-based Library Management System built in Java that enabl
     ```bash
     java -cp bin LibraryManagementSystem
     ```
+
+##OR 
+- **u can use run.bat file for windows os**
+
 ## Dependencies
 - Java Development Kit (JDK) 8 or higher
 ## Project Structure

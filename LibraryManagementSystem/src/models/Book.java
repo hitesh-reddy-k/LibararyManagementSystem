@@ -77,13 +77,22 @@ public class Book implements Serializable {
     
  
     public String toCSV() {
-        return bookId + "," + title + "," + author + "," + yearOfPublication + "," + 
-               status + "," + (checkedOutBy != null ? checkedOutBy : "");
+        StringBuilder csv = new StringBuilder();
+        csv.append(escapeCSV(bookId)).append(",");
+        csv.append(escapeCSV(title)).append(",");
+        csv.append(escapeCSV(author)).append(",");
+        csv.append(escapeCSV(String.valueOf(yearOfPublication))).append(",");
+        csv.append(escapeCSV(status.toString())).append(",");
+        csv.append(escapeCSV(checkedOutBy != null ? checkedOutBy : ""));
+        return csv.toString();
+    }
+    
+    private static String escapeCSV(String value) {
+        return "\"" + value.replace("\"", "\"\"") + "\"";
     }
 
     public static Book fromCSV(String csv) {
-       
-        String[] parts = csv.split(",", 6);
+        String[] parts = parseCSVLine(csv);
         
         String bookId = parts[0];
         String title = parts[1];
@@ -98,6 +107,35 @@ public class Book implements Serializable {
             System.out.println("Loaded checked out book: " + book.getTitle() + " by Patron ID: " + parts[5]);
         }
         return book;
+    }
+    
+    private static String[] parseCSVLine(String line) {
+        java.util.List<String> fields = new java.util.ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        boolean inQuotes = false;
+        int i = 0;
+        
+        while (i < line.length()) {
+            char c = line.charAt(i);
+            
+            if (c == '"') {
+                if (inQuotes && i + 1 < line.length() && line.charAt(i + 1) == '"') {
+                    current.append('"');
+                    i++;
+                } else {
+                    inQuotes = !inQuotes;
+                }
+            } else if (c == ',' && !inQuotes) {
+                fields.add(current.toString());
+                current = new StringBuilder();
+            } else {
+                current.append(c);
+            }
+            i++;
+        }
+        
+        fields.add(current.toString());
+        return fields.toArray(new String[0]);
     }
     
     @Override
